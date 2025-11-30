@@ -1,0 +1,12 @@
+langchain-anthropic>=0.3.0
+langchain-openai>=0.2.0
+chromadb>=0.5.0
+tiktoken>=0.7.0
+pandas>=2.2.0
+python-dotenv>=1.0.0
+# DriveSmart AI: Minimal Requirements
+# Only essential packages for core functionality
+# Core LangChain
+# langchain-core>=0.3.0
+# langchain-community>=0.3.0
+# langchain-text-splitters>=0.3.0

@@ -1,0 +1,104 @@
+{
+  "summary": {
+    "num_scenarios": 3,
+    "timestamp": "2025-11-22T18:05:41.770333"
+  },
+  "baseline_metrics": {
+    "avg_total_score": 0.09500000000000001,
+    "avg_topic_coverage": 0.0,
+    "avg_response_time_ms": 0.0007152557373046875,
+    "citation_rate": 0.0,
+    "disclaimer_rate": 0.0
+  },
+  "finetuned_metrics": {
+    "avg_total_score": 0.5533333333333333,
+    "avg_topic_coverage": 0.16666666666666666,
+    "avg_response_time_ms": 0.0003178914388020833,
+    "citation_rate": 1.0,
+    "disclaimer_rate": 1.0
+  },
+  "improvements": {
+    "avg_total_score": {
+      "absolute_change": 0.4583333333333333,
+      "percent_change": 482.45614035087715
+    },
+    "avg_topic_coverage": {
+      "absolute_change": 0.16666666666666666,
+      "percent_change": 100
+    },
+    "citation_rate": {
+      "absolute_change": 1.0,
+      "percent_change": 100
+    },
+    "disclaimer_rate": {
+      "absolute_change": 1.0,
+      "percent_change": 100
+    }
+  },
+  "detailed_results": {
+    "baseline": [
+      {
+        "scenario_id": "test_01",
+        "response_time_ms": 0.00095367431640625,
+        "topic_coverage": 0.0,
+        "has_citation": 0.0,
+        "has_disclaimer": 0.0,
+        "length_score": 0.3,
+        "clarity": 0.5,
+        "total_score": 0.095
+      },
+      {
+        "scenario_id": "test_02",
+        "response_time_ms": 0.0,
+        "topic_coverage": 0.0,
+        "has_citation": 0.0,
+        "has_disclaimer": 0.0,
+        "length_score": 0.3,
+        "clarity": 0.5,
+        "total_score": 0.095
+      },
+      {
+        "scenario_id": "test_03",
+        "response_time_ms": 0.0011920928955078125,
+        "topic_coverage": 0.0,
+        "has_citation": 0.0,
+        "has_disclaimer": 0.0,
+        "length_score": 0.3,
+        "clarity": 0.5,
+        "total_score": 0.095
+      }
+    ],
+    "finetuned": [
+      {
+        "scenario_id": "test_01",
+        "response_time_ms": 0.00095367431640625,
+        "topic_coverage": 0.25,
+        "has_citation": 1.0,
+        "has_disclaimer": 1.0,
+        "length_score": 0.3,
+        "clarity": 0.5,
+        "total_score": 0.5825
+      },
+      {
+        "scenario_id": "test_02",
+        "response_time_ms": 0.0,
+        "topic_coverage": 0.25,
+        "has_citation": 1.0,
+        "has_disclaimer": 1.0,
+        "length_score": 0.3,
+        "clarity": 0.5,
+        "total_score": 0.5825
+      },
+      {
+        "scenario_id": "test_03",
+        "response_time_ms": 0.0,
+        "topic_coverage": 0.0,
+        "has_citation": 1.0,
+        "has_disclaimer": 1.0,
+        "length_score": 0.3,
+        "clarity": 0.5,
+        "total_score": 0.495
+      }
+    ]
+  }
+}

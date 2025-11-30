@@ -1,0 +1,165 @@
+# DriveSmart AI - .gitignore
+# Prevents sensitive data and unnecessary files from being committed to GitHub
+
+# ============================================================================
+# CRITICAL: API Keys and Secrets
+# ============================================================================
+.env
+*.env
+src/.env
+.env.*
+!.env.example
+
+# API keys in any location
+**/OPENAI_API_KEY*
+**/CHROMA_API_KEY*
+**/ANTHROPIC_API_KEY*
+
+# ============================================================================
+# Python
+# ============================================================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# ============================================================================
+# ChromaDB
+# ============================================================================
+# Local ChromaDB storage
+chroma_db/
+*.db
+*.sqlite
+*.sqlite3
+
+# ChromaDB logs
+chroma.log
+
+# ============================================================================
+# Jupyter Notebook
+# ============================================================================
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+*-checkpoint.ipynb
+
+# ============================================================================
+# Logs and Metrics
+# ============================================================================
+logs/
+*.log
+performance_metrics.json
+monitoring_*.json
+
+# LangSmith local cache
+.langsmith/
+
+# ============================================================================
+# IDE and Editors
+# ============================================================================
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ============================================================================
+# Operating System
+# ============================================================================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+# ============================================================================
+# Temporary Files
+# ============================================================================
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# ============================================================================
+# Project Specific
+# ============================================================================
+# Test outputs
+test_outputs/
+debug/
+scratch/
+
+# Large datasets (if you add more data later)
+data/*.csv
+!data/traffic_laws_dataset*.csv
+!data/traffic_laws_dataset*.json
+
+# Model checkpoints (if you fine-tune later)
+checkpoints/
+models/
+
+# ============================================================================
+# Documentation Build
+# ============================================================================
+_build/
+site/
+
+# ============================================================================
+# Testing
+# ============================================================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ============================================================================
+# IMPORTANT NOTES
+# ============================================================================
+# Files to ALWAYS commit:
+# ✓ requirements.txt
+# ✓ README.md
+# ✓ Source code (.py files)
+# ✓ Sample data (traffic_laws_dataset.json)
+# ✓ .env.example (template without real keys)

@@ -1,0 +1,139 @@
+{
+  "summary": {
+    "total_scenarios": 8,
+    "successful": 8,
+    "failed": 0,
+    "avg_response_time_ms": 0.00014901161193847656,
+    "avg_topic_coverage": 0.0,
+    "citation_rate": 0.0,
+    "disclaimer_rate": 0.0
+  },
+  "by_persona": {
+    "educator": {
+      "avg_topic_coverage": 0.0,
+      "avg_response_time_ms": 0.0
+    },
+    "legal_professional": {
+      "avg_topic_coverage": 0.0,
+      "avg_response_time_ms": 0.0
+    },
+    "fleet_manager": {
+      "avg_topic_coverage": 0.0,
+      "avg_response_time_ms": 0.0
+    },
+    "individual_driver": {
+      "avg_topic_coverage": 0.0,
+      "avg_response_time_ms": 0.0002980232238769531
+    }
+  },
+  "areas_for_improvement": [
+    "Low topic coverage - improve retrieval relevance",
+    "Missing legal citations - add citation prompting"
+  ],
+  "detailed_results": [
+    {
+      "scenario_id": "driver_01",
+      "persona": "individual_driver",
+      "query": "Is it legal to use my phone at a red light in California?",
+      "response_length": 27,
+      "response_time_ms": 0.0,
+      "topic_coverage": 0.0,
+      "has_legal_citation": false,
+      "has_disclaimer": false,
+      "appropriate_length": false,
+      "response_preview": "Sample response for testing",
+      "status": "success"
+    },
+    {
+      "scenario_id": "driver_02",
+      "persona": "individual_driver",
+      "query": "What happens if I get caught driving 20 mph over the speed limit?",
+      "response_length": 27,
+      "response_time_ms": 0.0011920928955078125,
+      "topic_coverage": 0.0,
+      "has_legal_citation": false,
+      "has_disclaimer": false,
+      "appropriate_length": false,
+      "response_preview": "Sample response for testing",
+      "status": "success"
+    },
+    {
+      "scenario_id": "driver_03",
+      "persona": "individual_driver",
+      "query": "Can I make a right turn on red?",
+      "response_length": 27,
+      "response_time_ms": 0.0,
+      "topic_coverage": 0.0,
+      "has_legal_citation": false,
+      "has_disclaimer": false,
+      "appropriate_length": false,
+      "response_preview": "Sample response for testing",
+      "status": "success"
+    },
+    {
+      "scenario_id": "fleet_01",
+      "persona": "fleet_manager",
+      "query": "What are the parking restrictions for commercial trucks in downtown areas?",
+      "response_length": 27,
+      "response_time_ms": 0.0,
+      "topic_coverage": 0.0,
+      "has_legal_citation": false,
+      "has_disclaimer": false,
+      "appropriate_length": false,
+      "response_preview": "Sample response for testing",
+      "status": "success"
+    },
+    {
+      "scenario_id": "fleet_02",
+      "persona": "fleet_manager",
+      "query": "What documentation must our delivery drivers carry?",
+      "response_length": 27,
+      "response_time_ms": 0.0,
+      "topic_coverage": 0.0,
+      "has_legal_citation": false,
+      "has_disclaimer": false,
+      "appropriate_length": false,
+      "response_preview": "Sample response for testing",
+      "status": "success"
+    },
+    {
+      "scenario_id": "legal_01",
+      "persona": "legal_professional",
+      "query": "Summarize the differences in DUI blood alcohol limits across states",
+      "response_length": 27,
+      "response_time_ms": 0.0,
+      "topic_coverage": 0.0,
+      "has_legal_citation": false,
+      "has_disclaimer": false,
+      "appropriate_length": false,
+      "response_preview": "Sample response for testing",
+      "status": "success"
+    },
+    {
+      "scenario_id": "edu_01",
+      "persona": "educator",
+      "query": "Explain right-of-way rules at a four-way stop for new drivers",
+      "response_length": 27,
+      "response_time_ms": 0.0,
+      "topic_coverage": 0.0,
+      "has_legal_citation": false,
+      "has_disclaimer": false,
+      "appropriate_length": false,
+      "response_preview": "Sample response for testing",
+      "status": "success"
+    },
+    {
+      "scenario_id": "edge_01",
+      "persona": "individual_driver",
+      "query": "I got a ticket but the sign was covered by a tree branch. Can I fight it?",
+      "response_length": 27,
+      "response_time_ms": 0.0,
+      "topic_coverage": 0.0,
+      "has_legal_citation": false,
+      "has_disclaimer": false,
+      "appropriate_length": false,
+      "response_preview": "Sample response for testing",
+      "status": "success"
+    }
+  ]
+}
