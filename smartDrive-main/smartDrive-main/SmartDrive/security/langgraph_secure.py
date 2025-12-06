@@ -21,7 +21,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 import chromadb
 
 # Security imports

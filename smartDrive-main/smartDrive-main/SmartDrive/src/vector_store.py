@@ -10,7 +10,10 @@ Data location: smartdrive/data/traffic_laws_dataset.json
 
 import os
 import json
-import pandas as pd  # Add pandas for CSV reading
+import pandas as pd 
+ # Add pandas for CSV reading
+import re
+from typing import List
 from pathlib import Path
 from typing import List, Dict, Any
 from dotenv import load_dotenv
@@ -22,7 +25,7 @@ import chromadb
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # Vector store
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 
 # Embeddings - OpenAI text-embedding-3-small
 from langchain_openai import OpenAIEmbeddings
@@ -43,7 +46,38 @@ from langchain_core.runnables import (
 # ============================================================================
 # LOAD ENVIRONMENT VARIABLES
 # ============================================================================
+US_STATES = {
+    "massachusetts": "Massachusetts",
+    "ma": "Massachusetts",
+    "california": "California",
+    "ca": "California",
+    "new york": "New York",
+    "ny": "New York",
+    "texas": "Texas",
+    "tx": "Texas",
+}
 
+def extract_jurisdictions(text: str) -> List[str]:
+    if not text:
+        return []
+
+    t = text.lower()
+    found = []
+
+    # match multi-word and abbreviations safely
+    for k, v in US_STATES.items():
+        if re.search(r"\b" + re.escape(k) + r"\b", t):
+            found.append(v)
+
+    # dedupe preserve order
+    seen = set()
+    out = []
+    for s in found:
+        if s not in seen:
+            seen.add(s)
+            out.append(s)
+
+    return out
 # Load from src/.env file
 env_path = Path(__file__).parent.parent/'src'/'.env'
 print(env_path)
@@ -113,7 +147,7 @@ class CloudTrafficLawVectorStore:
         if not data_path.exists():
             raise FileNotFoundError(
                 f"Traffic law dataset not found at: {data_path}\n"
-                f"Please ensure the file exists at: smartdrive/data/traffic_laws_dataset_json.json"
+                f"Please ensure the file exists at: smartdrive/data/traffic_laws_dataset.json"
             )
         
         with open(data_path, 'r') as f:
@@ -182,14 +216,8 @@ Keywords: {', '.join(item['keywords'])}
         print(f"✓ Connected to existing collection: {collection_name}")
         return self.vectorstore
     
-    def query(self, query: str, k: int = 3):
-        """Query the vector store"""
-        if self.vectorstore is None:
-            raise ValueError("Vectorstore not initialized. Call initialize_vectorstore() first.")
-        
-        results = self.vectorstore.similarity_search(query, k=k)
-        return results
-
+    # def query(self, question: str, prompt_type: str = 'general'):
+    #   chain = self.create_chain(prompt_type)  # always rebuild
 # ============================================================================
 # MODERN DRIVESMART WORKFLOW
 # ============================================================================
@@ -207,7 +235,7 @@ class ModernDriveSmartWorkflow:
             api_key=os.getenv("OPENAI_API_KEY")
         )
         
-        self.retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+       
         self.chains = {}
         
         # Create the three prompts
@@ -221,72 +249,94 @@ class ModernDriveSmartWorkflow:
                 input_variables=["context", "question"],
                 template="""You are a certified traffic law instructor.
 
-Context: {context}
+Use ONLY the context.
 
-Question: {question}
+Answer the question in ONE short sentence.
+Do not include numbering, labels, headings, or extra explanation.
+If the answer is not in the context, reply exactly:
+Not found in database.
 
-Provide:
-1. Direct answer
-2. Statute reference
-3. Penalties
-4. Prevention tips
+Context:
+{context}
+
+Question:
+{question}
 
 Answer:"""
-            ),
-            
-            'scenario': PromptTemplate(
-                input_variables=["context", "scenario"],
-                template="""You are a traffic law expert analyzing a scenario.
+            ),      
+    
+    "scenario": PromptTemplate(
+        input_variables=["context", "scenario"],
+        template="""You are a certified traffic law instructor.
 
-Legal Context: {context}
+Use ONLY the context.
 
-Scenario: {scenario}
+Answer the question in ONE short sentence.
+Do not include numbering, labels, headings, or extra explanation.
+If the answer is not in the context, reply exactly:
+Not found in database.
 
-Analyze step-by-step:
-1. Violations identified
-2. Applicable laws
-3. Consequences
-4. Recommendations
+Context:
+{context}
 
-Analysis:"""
-            ),
-            
-            'comparative': PromptTemplate(
-                input_variables=["context", "question"],
-                template="""You are a traffic law consultant comparing jurisdictions.
+Question:
+{question}
 
-Legal Information: {context}
+Answer:"""
+    ),
+    "comparative": PromptTemplate(
+        input_variables=["context", "question"],
+         template="""You are a certified traffic law instructor.
 
-Question: {question}
+Use ONLY the context.
 
-Compare:
-1. Similarities
-2. Differences
-3. Recommendations
+Answer the question in ONE short sentence.
+Do not include numbering, labels, headings, or extra explanation.
+If the answer is not in the context, reply exactly:
+Not found in database.
 
-Comparison:"""
-            )
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:"""
+    )
         }
     
     def format_docs(self, docs):
         """Format documents for context"""
         return "\n\n".join(doc.page_content for doc in docs)
     
-    def create_chain(self, prompt_type: str = 'general'):
+    def create_chain(self, prompt_type: str = 'general', retriever=None):
         """Create a retrieval chain for the specified prompt type"""
-        
+        aliases = {
+        "general": "general",
+        "default": "general",
+        "scenario": "scenario",
+        "scenerio": "scenario",   # common typo
+        "case": "scenario",
+        "comparative": "comparative",
+        "compare": "comparative"
+        }
+
+        prompt_type = aliases.get(prompt_type, prompt_type)
+
+        if prompt_type not in self.prompts:
+           prompt_type = "general"
         if prompt_type not in self.prompts:
             raise ValueError(f"Unknown prompt type: {prompt_type}")
-        
+
         prompt = self.prompts[prompt_type]
-        
-        # Get the correct input variable name
         input_var = "question" if "question" in prompt.input_variables else "scenario"
-        
-        # Build chain using LCEL
+
+        # fallback retriever if not provided
+        retriever = retriever or self.vectorstore.as_retriever(search_kwargs={"k": 3})
+
         chain = RunnableParallel(
             {
-                "context": self.retriever,
+                "context": retriever,
                 input_var: RunnablePassthrough()
             }
         ).assign(
@@ -300,23 +350,43 @@ Comparison:"""
             }),
             sources=lambda x: x["context"]
         )
-        
-        self.chains[prompt_type] = chain
+
         return chain
-    
     def query(self, question: str, prompt_type: str = 'general'):
-        """Execute a query using the specified chain"""
-        
-        if prompt_type not in self.chains:
-            self.create_chain(prompt_type)
-        
-        chain = self.chains[prompt_type]
+        states = extract_jurisdictions(question)
+
+        # Pull more docs first, then filter in Python (most reliable)
+        base_retriever = self.vectorstore.as_retriever(search_kwargs={"k": 8})
+
+        # Filter retrieved docs by mentioned states
+        if states:
+            retriever = base_retriever | RunnableLambda(
+               lambda docs: [
+                    d for d in docs
+                    if (d.metadata.get("jurisdiction") or "").strip() in states
+                ]
+            )
+        else:
+            retriever = base_retriever
+
+        chain = self.create_chain(prompt_type, retriever=retriever)
         result = chain.invoke(question)
-        
+        raw = result["answer"].strip()
+        # Take first non-empty line
+        first_line = next((l.strip() for l in raw.splitlines() if l.strip()), "")
+
+# Remove common leading labels/numbering
+        first_line = re.sub(r"^\s*\d+[\.\)]\s*", "", first_line)  # "1. "
+        first_line = re.sub(r"^\s*direct answer\s*:\s*", "", first_line, flags=re.I)
+
+        answer = first_line.strip() if first_line else "Not found in database"
+
         return {
-            'answer': result['answer'],
-            'sources': result['sources']
-        }
+          "answer": answer,
+          "sources": result["sources"],
+          "detected_jurisdiction": ", ".join(states) if states else "Unspecified"
+}
+ 
 
 # ============================================================================
 # MAIN EXECUTION
@@ -335,8 +405,8 @@ def main():
     
     # Step 2: Load data from smartdrive/data folder
     print("\n[2] Loading Traffic Law Data from smartdrive/data/...")
-    data_path = Path(__file__).parent.parent/'data'/'traffic_laws_dataset_json.json'
-    'smartdrive/data/traffic_laws_dataset_json.json'
+    data_path = Path(__file__).parent.parent/'data'/'traffic_laws_dataset.json'
+    'smartdrive/data/traffic_laws_dataset.json'
     
     try:
         data = vector_store_manager.load_data(data_path)
@@ -347,7 +417,7 @@ def main():
         print("\nExpected file structure:")
         print("  smartdrive/")
         print("    └── data/")
-        print("        └── traffic_laws_dataset_json.json")
+        print("        └── traffic_laws_dataset.json")
         print("\nPlease ensure the file exists at this location.")
         return None, None
     
@@ -435,13 +505,13 @@ if __name__ == "__main__":
     
     # Verify file structure
     print("\n[Checking File Structure]")
-    data_file = Path(__file__).parent.parent/'data'/'traffic_laws_dataset_json.json'
+    data_file = Path(__file__).parent.parent/'data'/'traffic_laws_dataset.json'
     
     if data_file.exists():
         print(f"✓ Found: {data_file}")
     else:
         print(f"❌ Missing: {data_file}")
-        print("\nPlease create the file at: smartdrive/data/traffic_laws_dataset_json.json")
+        print("\nPlease create the file at: smartdrive/data/traffic_laws_dataset.json")
         exit(1)
     
     # First time: Initialize and upload data

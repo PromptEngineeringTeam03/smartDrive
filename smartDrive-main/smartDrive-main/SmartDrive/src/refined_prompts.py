@@ -14,7 +14,7 @@ env_path = Path(__file__).parent / '.env'
 load_dotenv(env_path, override=True)
 
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough

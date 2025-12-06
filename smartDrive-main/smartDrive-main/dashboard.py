@@ -18,9 +18,9 @@ import chromadb
 from dotenv import load_dotenv
 import uuid
 
-# Load environment variables
-load_dotenv()
 
+# Load environment variables
+load_dotenv(Path(__file__).parent / ".env", override=True)
 # Add src to path for imports
 sys.path.append(str(Path(__file__).parent.parent.parent/'SmartDrive'/ 'src'))
 
@@ -198,7 +198,14 @@ def get_managers():
         return db_manager, input_validator, output_validator, behavioral_monitor
     
     return db_manager, None, None, None
+@st.cache_resource
+def get_workflow():
+    from SmartDrive.src.vector_store import CloudTrafficLawVectorStore, ModernDriveSmartWorkflow
 
+    vsm = CloudTrafficLawVectorStore()
+    vectorstore = vsm.get_existing_vectorstore("traffic_laws")
+    workflow = ModernDriveSmartWorkflow(vectorstore)
+    return workflow
 db_manager, input_validator, output_validator, behavioral_monitor = get_managers()
 stats = db_manager.get_stats()
 
@@ -294,12 +301,12 @@ with col_left:
         st.warning("⚠️ Security Disabled")
     
     query = st.text_area(
-        "",
+        "Traffic law question",
         height=200,
         placeholder="Enter your traffic law question...",
         key="query_input",
         label_visibility="collapsed"
-    )
+)
     
     jurisdiction = "All"
     prompt_type = "General"
@@ -362,56 +369,51 @@ with col_left:
         # ========== NORMAL PROCESSING ==========
         with st.spinner("🔍 Searching traffic law database..."):
             start_time = time.time()
-            
-            search_results = db_manager.search_traffic_laws(query, jurisdiction, 5)
-            
-            if search_results and search_results['documents'][0]:
-                documents = search_results['documents'][0]
-                metadatas = search_results['metadatas'][0]
-                
-                response = f"""**🎯 DIRECT ANSWER:**
-Here's what I found regarding "{query[:100]}...":
+          
 
-**⚖️ RELEVANT LAWS:**
-"""
-                for i, (doc, meta) in enumerate(zip(documents[:3], metadatas[:3]), 1):
-                    category = meta.get('Category', 'Traffic Law')
-                    violation = meta.get('Violation', 'General')
-                    doc_jurisdiction = meta.get('Jurisdiction', 'Not specified')
-                    law_text = doc[:300] + "..." if len(doc) > 300 else doc
-                    
-                    response += f"""
-**{i}. {category} - {violation}**
-📍 *Jurisdiction: {doc_jurisdiction}*
-{law_text}
+            workflow = get_workflow()
+                          # Decide prompt type (simple rule)
+            ALLOWED_PROMPT_TYPES = {"general", "scenario", "comparative"}
 
-"""
-                
-                response += """
-**⚠️ LEGAL DISCLAIMER:** This information is for educational purposes only."""
-                
-                sources_count = len(documents)
+
+            q_lower = query.lower()
+            
+            if "compare" in q_lower or "difference" in q_lower:
+                    prompt_type_key = "comparative"
+            elif "i was" in q_lower or "scenario" in q_lower:
+                    prompt_type_key = "scenario"
             else:
-                response = f"""**🎯 DIRECT ANSWER:**  
-No specific laws found. Please consult official sources.
+                    prompt_type_key = "general"
+            if prompt_type_key not in ALLOWED_PROMPT_TYPES:
+                prompt_type_key = "general"
 
-**⚠️ NOTE:** Limited information available in database."""
-                sources_count = 0
-            
+            result = workflow.query(query, prompt_type_key)
+
+                # ✅ One-line clean answer first
+            # ✅ Convert detected_jurisdiction to a DB-safe string
+            jur = result.get("detected_jurisdiction", "All")
+            if isinstance(jur, list):
+                jur = ", ".join(jur)
+            answer_text = result["answer"].strip()
+
+            response = f"** AI ANSWER:** {answer_text}"
+
+            sources_count = len(result.get("sources", []))
             response_time = time.time() - start_time
-            
+
             query_data = {
-                'query': query,
-                'response': response,
-                'jurisdiction': jurisdiction,
-                'analysis_type': prompt_type,
-                'response_time': response_time,
-                'sources_count': sources_count
-            }
-            
+                    "query": query,
+                    "response": response,
+                    "jurisdiction":  jur,
+                    "analysis_type": prompt_type_key,
+                    "response_time": response_time,
+                    "sources_count": sources_count
+                }
+
             db_manager.save_query(query_data)
             st.session_state.last_response = query_data
 
+   
 # CENTER COLUMN - Response
 with col_center:
     st.markdown('<h2>📋 Response</h2>', unsafe_allow_html=True)

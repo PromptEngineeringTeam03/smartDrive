@@ -1,0 +1,26 @@
+[
+    {
+      "id": "NY001",
+      "jurisdiction": "New York",
+      "category": "Right of Way",
+      "violation": "Failure to yield to pedestrian in crosswalk",
+      "law_text": "Every driver of a vehicle shall yield the right of way to a pedestrian crossing the roadway within any marked crosswalk or within any unmarked crosswalk at an intersection.",
+      "statute": "NY VTL § 1151",
+      "penalty": "$50-$300 fine, 3 points, possible license suspension",
+      "severity": "high",
+      "preventive_tip": "Stop for pedestrians and scan intersections proactively.",
+      "keywords": ["pedestrian", "crosswalk", "yield"]
+    },
+    {
+      "id": "NY002",
+      "jurisdiction": "New York",
+      "category": "Phone Use",
+      "violation": "Texting while driving",
+      "law_text": "Drivers may not use portable electronic devices to compose, send, read, access, browse, transmit, save or retrieve email, text messages, or other electronic data while driving.",
+      "statute": "NY VTL § 1225-d",
+      "penalty": "Fines and points; increased for repeat violations",
+      "severity": "high",
+      "preventive_tip": "Enable driving focus mode and avoid handling devices.",
+      "keywords": ["texting", "phone", "portable device", "distracted driving"]
+    }
+  ]

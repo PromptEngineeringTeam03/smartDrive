@@ -1,0 +1,84 @@
+[
+    {
+      "id": "CA001",
+      "jurisdiction": "California",
+      "category": "Speed Limits",
+      "violation": "Unsafe speed for conditions",
+      "law_text": "No person shall drive a vehicle upon a highway at a speed greater than is reasonable or prudent having due regard for weather, visibility, traffic, and surface conditions.",
+      "statute": "California Vehicle Code § 22350",
+      "penalty": "$238+ fine, 1-2 points depending on speed",
+      "severity": "high",
+      "preventive_tip": "Adjust speed for weather, traffic, and road conditions.",
+      "keywords": ["speeding", "basic speed law", "highway", "weather"],
+  
+      "topic": "speeding",
+      "subtopic": "basic_speed_law",
+      "scenario_key": "speeding_basic_speed_law",
+      "rule_summary": "Drivers must travel at a reasonable and prudent speed based on real-time conditions such as weather, visibility, traffic, and road surface.",
+      "thresholds": [
+        {
+          "type": "conditions_based_standard",
+          "value": "reasonable and prudent",
+          "unit": "standard"
+        }
+      ],
+      "penalty_structure": {
+        "fine_min_usd": 238,
+        "fine_note": "May increase based on circumstances and local assessments",
+        "points_range": [1, 2]
+      },
+      "confidence": "high"
+    },
+    {
+      "id": "CA002",
+      "jurisdiction": "California",
+      "category": "Seat Belts",
+      "violation": "Failure to wear seat belt",
+      "law_text": "A person shall not operate a motor vehicle on a highway unless that person and all passengers 16 years of age or over are properly restrained by a safety belt.",
+      "statute": "California Vehicle Code § 27315",
+      "penalty": "$162 fine (first offense)",
+      "severity": "low",
+      "preventive_tip": "Buckle up before you start driving.",
+      "keywords": ["seat belt", "restraint", "passenger safety"],
+  
+      "topic": "occupant_safety",
+      "subtopic": "seat_belt_requirement",
+      "scenario_key": "seatbelt_driver_passengers_16plus",
+      "rule_summary": "Drivers must ensure they and passengers aged 16+ are properly restrained by a safety belt while operating a vehicle on a highway.",
+      "thresholds": [
+        {
+          "type": "age_applies_from",
+          "value": 16,
+          "unit": "years"
+        }
+      ],
+      "penalty_structure": {
+        "fine_usd": 162,
+        "offense_level": "first"
+      },
+      "confidence": "high"
+    },
+    {
+      "id": "CA003",
+      "jurisdiction": "California",
+      "category": "Phone Use",
+      "violation": "Handheld phone use while driving",
+      "law_text": "Drivers may not hold and operate a handheld wireless telephone or electronic communications device while driving.",
+      "statute": "California Vehicle Code § 23123.5",
+      "penalty": "Base fine varies; increased penalties for repeat offenses",
+      "severity": "high",
+      "preventive_tip": "Use hands-free and set navigation before moving.",
+      "keywords": ["phone", "handheld", "distracted driving"],
+  
+      "topic": "distracted_driving",
+      "subtopic": "handheld_phone_ban",
+      "scenario_key": "phone_handheld_ban_general",
+      "rule_summary": "Drivers are prohibited from holding and operating handheld phones or electronic communication devices while driving.",
+      "thresholds": [],
+      "penalty_structure": {
+        "fine_note": "Base fine varies; higher penalties for repeat offenses",
+        "repeat_offense": true
+      },
+      "confidence": "medium"
+    }
+  ]
